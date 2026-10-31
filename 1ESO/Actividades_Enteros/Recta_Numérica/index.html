@@ -5,637 +5,663 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coloca cada número en su lugar</title>
 <style>
-:root{
-    --primary:#2563eb;
-    --secondary:#0ea5e9;
-    --success:#16a34a;
-    --danger:#dc2626;
-    --warning:#f59e0b;
-    --bg:#f3f6fb;
-    --card:#ffffff;
-    --text:#1f2937;
-}
-*{box-sizing:border-box;}
+*{box-sizing:border-box}
 body{
-    margin:0;
-    font-family:Segoe UI,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
+margin:0;
+font-family:Segoe UI,Arial,sans-serif;
+background:linear-gradient(135deg,#e8f4ff,#f6fbff);
+color:#1f2937;
 }
-.container{
-    width:100%;
-    min-height:100vh;
-    padding:18px;
-}
-h1{
-    text-align:center;
-    margin:0;
-    color:var(--primary);
-}
-.subtitle{
-    text-align:center;
-    margin:8px 0 20px;
-}
-.panel{
-    background:var(--card);
-    border-radius:18px;
-    padding:20px;
-    max-width:1200px;
-    margin:auto;
-    box-shadow:0 4px 18px rgba(0,0,0,.1);
-}
+
 .screen{
-    display:none;
+display:none;
+padding:20px;
+max-width:1400px;
+margin:auto;
+min-height:100vh;
 }
+
 .screen.active{
-    display:block;
+display:block;
 }
-.scoreBox{
-    text-align:center;
-    font-weight:bold;
-    font-size:1.1rem;
-    margin-bottom:15px;
+
+h1,h2{
+text-align:center;
+margin:10px 0;
 }
-.cards{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    justify-content:center;
-    margin-bottom:20px;
+
+.subtitle{
+text-align:center;
+font-size:1rem;
+margin-bottom:15px;
+color:#374151;
 }
-.number-card{
-    background:var(--primary);
-    color:white;
-    padding:12px 18px;
-    border-radius:12px;
-    font-size:1.2rem;
-    cursor:grab;
-    user-select:none;
-    min-width:70px;
-    text-align:center;
-    font-weight:bold;
+
+.card{
+background:white;
+border-radius:18px;
+padding:20px;
+box-shadow:0 6px 18px rgba(0,0,0,.12);
 }
-.number-card.used{
-    opacity:.35;
-}
-.line-container{
-    width:100%;
-    overflow-x:auto;
-    padding-bottom:10px;
-}
-.number-line{
-    position:relative;
-    width:100%;
-    min-width:900px;
-    height:110px;
-    margin:30px auto;
-}
-.base-line{
-    position:absolute;
-    left:2%;
-    right:2%;
-    top:55px;
-    height:4px;
-    background:#333;
-}
-.tick{
-    position:absolute;
-    top:40px;
-    width:2px;
-    height:30px;
-    background:#444;
-}
-.tick-label{
-    position:absolute;
-    top:74px;
-    font-size:.8rem;
-    transform:translateX(-50%);
-}
-.dropzone{
-    position:absolute;
-    top:0;
-    width:28px;
-    height:35px;
-    transform:translateX(-50%);
-    border:2px dashed #cbd5e1;
-    border-radius:10px;
-}
-.dropzone.correct{
-    background:#dcfce7;
-    border-color:var(--success);
-}
-.dropzone.error{
-    background:#fee2e2;
-    border-color:var(--danger);
-}
-.dropzone .placed{
-    font-weight:bold;
-    text-align:center;
-    line-height:30px;
-}
+
 .btn{
-    border:none;
-    padding:12px 22px;
-    border-radius:12px;
-    cursor:pointer;
-    font-size:1rem;
-    font-weight:bold;
-    margin:6px;
+background:#2563eb;
+color:white;
+border:none;
+padding:14px 24px;
+border-radius:12px;
+cursor:pointer;
+font-size:1rem;
+font-weight:700;
+margin:10px;
+transition:.3s;
 }
-.primary{background:var(--primary);color:white;}
-.success{background:var(--success);color:white;}
-.warning{background:var(--warning);color:white;}
-.center{text-align:center;}
+
+.btn:hover{
+transform:translateY(-2px);
+background:#1d4ed8;
+}
+
+.btn-green{
+background:#16a34a;
+}
+.btn-orange{
+background:#ea580c;
+}
+.btn-purple{
+background:#7c3aed;
+}
+
+.center{
+text-align:center;
+}
+
+.score{
+font-size:1.2rem;
+font-weight:bold;
+text-align:center;
+margin:15px 0;
+}
+
+.draggables{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+margin:20px 0;
+}
+
+.drag-number{
+background:#2563eb;
+color:white;
+padding:12px 18px;
+border-radius:10px;
+cursor:grab;
+font-weight:bold;
+user-select:none;
+font-size:1.1rem;
+}
+
+.drag-number.used{
+opacity:.45;
+}
+
+.number-line{
+overflow-x:auto;
+padding:20px 0;
+}
+
+.line-wrapper{
+min-width:1250px;
+position:relative;
+height:180px;
+}
+
+.main-line{
+position:absolute;
+left:0;
+right:0;
+top:110px;
+height:4px;
+background:#111827;
+}
+
+.tick{
+position:absolute;
+top:95px;
+width:2px;
+height:30px;
+background:#111827;
+}
+
+.label{
+position:absolute;
+top:125px;
+left:-8px;
+font-weight:bold;
+color:#dc2626;
+}
+
+.dropzone{
+position:absolute;
+top:42px;
+width:32px;
+height:32px;
+border:2px dashed #94a3b8;
+border-radius:8px;
+background:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+font-size:.95rem;
+}
+
+.dropzone.correct{
+background:#dcfce7;
+border-color:#16a34a;
+}
+
+.dropzone.wrong{
+background:#fee2e2;
+border-color:#dc2626;
+}
+
 .feedback{
-    margin-top:14px;
-    text-align:center;
-    font-weight:bold;
+margin-top:15px;
+font-size:1rem;
+font-weight:600;
+text-align:center;
 }
+
 .question{
-    background:#eef3ff;
-    border-left:5px solid var(--primary);
-    margin:12px 0;
-    padding:12px;
-    border-radius:10px;
+background:white;
+border-radius:14px;
+padding:15px;
+margin:12px 0;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
 }
+
 .question input{
-    padding:8px;
-    width:100px;
-    font-size:1rem;
+width:120px;
+padding:10px;
+font-size:1rem;
+text-align:center;
+margin-left:10px;
 }
+
 .result{
-    margin-top:8px;
+margin-top:10px;
+font-weight:bold;
 }
-.correctText{color:var(--success);font-weight:bold;}
-.errorText{color:var(--danger);font-weight:bold;}
+
 .visual{
-    margin-top:6px;
-    font-size:.95rem;
+margin-top:10px;
+padding:8px;
+background:#eff6ff;
+border-radius:8px;
+font-size:.95rem;
 }
+
 .challenge{
-    font-size:1.1rem;
-    line-height:1.8;
+font-size:1.15rem;
+line-height:1.8;
 }
-.summary{
-    text-align:center;
-    font-size:1.2rem;
+
+.final-box{
+background:white;
+border-radius:18px;
+padding:25px;
+box-shadow:0 6px 18px rgba(0,0,0,.12);
+max-width:800px;
+margin:auto;
+text-align:center;
 }
-.finalBox{
-    background:#eef8ff;
-    padding:18px;
-    border-radius:16px;
+
+.big-score{
+font-size:2rem;
+font-weight:bold;
+margin:15px 0;
+color:#2563eb;
 }
-@media(max-width:800px){
-    .number-line{
-        min-width:780px;
-    }
-    .question input{
-        width:80px;
-    }
+
+@media(max-width:768px){
+h1{font-size:1.5rem}
+.question input{width:90px}
+.btn{width:100%;margin:8px 0}
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-<div class="panel">
-
-<h1>Coloca cada número en su lugar</h1>
-<div class="subtitle">
-Matemáticas 1.º ESO · Números enteros · Recta numérica
-</div>
-
-<div class="scoreBox" id="scoreDisplay">Puntuación: 0</div>
-
 <!-- PANTALLA 1 -->
-<section class="screen active" id="screen1">
+<section id="screen1" class="screen active">
+<h1>🎯 Coloca cada número en su lugar</h1>
+<div class="subtitle">Arrastra cada número hasta su posición correcta en la recta numérica.</div>
 
-<h2>Parte 1. Colocación en la recta numérica</h2>
+<div class="card">
 
-<div class="cards" id="cards"></div>
+<div class="draggables" id="draggables"></div>
 
-<div class="line-container">
-<div class="number-line" id="line"></div>
+<div class="number-line">
+<div class="line-wrapper" id="lineWrapper">
+<div class="main-line"></div>
+</div>
 </div>
 
 <div class="center">
-<button class="btn success" onclick="checkPlacement()">Comprobar</button>
+<button class="btn btn-green" onclick="checkPart1()">Comprobar</button>
 </div>
 
-<div id="placementFeedback" class="feedback"></div>
+<div id="feedback1" class="feedback"></div>
 
 <div class="center">
-<button class="btn primary" id="toScreen2" style="display:none;" onclick="goScreen(2)">
-Ir a la Parte 2
+<button id="toScreen2" class="btn" style="display:none" onclick="showScreen(2)">
+Continuar a desplazamientos →
 </button>
 </div>
 
+</div>
 </section>
 
 <!-- PANTALLA 2 -->
-<section class="screen" id="screen2">
+<section id="screen2" class="screen">
+<h2>➡️ Parte 2. Desplazamientos en la recta numérica</h2>
 
-<h2>Parte 2. Desplazamientos en la recta numérica</h2>
-
+<div class="card">
 <div id="questionsContainer"></div>
 
 <div class="center">
-<button class="btn success" onclick="checkQuestions()">Comprobar respuestas</button>
+<button class="btn btn-green" onclick="checkPart2()">Comprobar respuestas</button>
 </div>
+
+<div id="part2Result" class="feedback"></div>
 
 <div class="center">
-<button class="btn primary" id="toScreen3" style="display:none;" onclick="goScreen(3)">
-Ir al Reto Final
+<button id="toScreen3" class="btn" style="display:none" onclick="showScreen(3)">
+Ir al reto final →
 </button>
 </div>
-
+</div>
 </section>
 
 <!-- PANTALLA 3 -->
-<section class="screen" id="screen3">
+<section id="screen3" class="screen">
+<h2>🏆 Reto final</h2>
 
-<h2>Parte 3. Reto final</h2>
+<div class="card">
 
-<div id="challengeArea"></div>
+<div id="challengeText" class="challenge"></div>
+
+<div style="text-align:center;margin:15px 0;">
+<input type="number" id="challengeAnswer" style="padding:10px;font-size:1.1rem;width:120px;text-align:center;">
+</div>
 
 <div class="center">
-<button class="btn success" onclick="checkChallenge()">
-Comprobar reto
-</button>
+<button class="btn btn-purple" onclick="checkChallenge()">Comprobar reto</button>
 </div>
 
-<div id="challengeFeedback"></div>
+<div id="challengeFeedback" class="feedback"></div>
 
-<div id="finalSummary" style="display:none;"></div>
-
+</div>
 </section>
 
+<!-- FINAL -->
+<section id="screen4" class="screen">
+<div class="final-box">
+
+<h2>📊 Resultados finales</h2>
+
+<div id="finalStats"></div>
+
+<div class="big-score" id="finalPercent"></div>
+
+<div id="finalMessage"></div>
+
+<button class="btn btn-orange" onclick="newGame()">
+🔄 Jugar otra partida
+</button>
+
 </div>
-</div>
+</section>
 
 <script>
 
-let game={};
-let score=0;
-let totalQuestions=11;
+let numbers=[];
+let selectedDrops={};
 
-function updateScore(){
-    document.getElementById("scoreDisplay").textContent="Puntuación: "+score;
-}
+let questions=[];
+let challenge={};
+
+let totalQuestions=11;
+let correctAnswers=0;
+
+const MIN=-15;
+const MAX=15;
 
 function randomInt(a,b){
-    return Math.floor(Math.random()*(b-a+1))+a;
+return Math.floor(Math.random()*(b-a+1))+a;
 }
 
-function signed(n){
-    if(n>0) return "+"+n;
-    return n.toString();
+function sign(n){
+return n>0?`+${n}`:n.toString();
 }
 
-function generateUniqueNumbers(){
-    let set=new Set();
-    while(set.size<5){
-        set.add(randomInt(-10,10));
-    }
-    return [...set];
+function showScreen(n){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById("screen"+n).classList.add("active");
 }
 
-function startGame(){
+function generateNumbers(){
+const set=new Set();
 
-score=0;
-updateScore();
-
-game={};
-game.numbers=generateUniqueNumbers();
-
-createNumberLine();
-createQuestions();
-createChallenge();
-
-document.getElementById("placementFeedback").innerHTML="";
-document.getElementById("toScreen2").style.display="none";
-document.getElementById("toScreen3").style.display="none";
-document.getElementById("finalSummary").style.display="none";
-
-goScreen(1);
-
+while(set.size<5){
+let n=randomInt(-10,10);
+if(n!==0) set.add(n);
 }
 
-function goScreen(n){
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    document.getElementById("screen"+n).classList.add("active");
+return [...set];
 }
 
-/* --------------------- PANTALLA 1 --------------------- */
+function buildLine(){
 
-function createNumberLine(){
+const wrapper=document.getElementById("lineWrapper");
+wrapper.innerHTML='<div class="main-line"></div>';
 
-const cards=document.getElementById("cards");
-cards.innerHTML="";
+const step=40;
 
-const line=document.getElementById("line");
-line.innerHTML='<div class="base-line"></div>';
+for(let n=MIN;n<=MAX;n++){
 
-for(let i=-15;i<=15;i++){
+const left=(n-MIN)*step;
 
-let pos=((i+15)/30)*96+2;
+const tick=document.createElement("div");
+tick.className='tick';
+tick.style.left=left+'px';
 
-let tick=document.createElement("div");
-tick.className="tick";
-tick.style.left=pos+"%";
-line.appendChild(tick);
+wrapper.appendChild(tick);
 
-let label=document.createElement("div");
-label.className="tick-label";
-label.style.left=pos+"%";
-
-if(i===0){
-    label.textContent="0";
+if(n===0){
+const lbl=document.createElement("div");
+lbl.className='label';
+lbl.innerText='0';
+lbl.style.left=(left-5)+'px';
+wrapper.appendChild(lbl);
 }else{
-    label.textContent="";
-}
 
-line.appendChild(label);
+const dz=document.createElement("div");
+dz.className='dropzone';
+dz.dataset.value=n;
+dz.style.left=(left-15)+'px';
 
-let zone=document.createElement("div");
-zone.className="dropzone";
-zone.dataset.value=i;
-zone.style.left=pos+"%";
+dz.addEventListener("dragover",e=>e.preventDefault());
 
-zone.addEventListener("dragover",e=>e.preventDefault());
-
-zone.addEventListener("drop",e=>{
+dz.addEventListener("drop",e=>{
 e.preventDefault();
 
-let value=e.dataTransfer.getData("text");
-zone.innerHTML='<div class="placed">'+value+'</div>';
-zone.dataset.placed=value;
+const value=e.dataTransfer.getData("text");
+dz.innerText=value;
+dz.dataset.placed=value;
 
-document.querySelectorAll(".number-card").forEach(c=>{
-if(c.dataset.value===value){
-c.classList.add("used");
-}
-});
+selectedDrops[value]=dz.dataset.value;
 });
 
-line.appendChild(zone);
+wrapper.appendChild(dz);
+}
+}
 }
 
-game.numbers.forEach(n=>{
+function buildNumbers(){
+const container=document.getElementById("draggables");
+container.innerHTML='';
 
-let card=document.createElement("div");
-card.className="number-card";
-card.draggable=true;
-card.dataset.value=n;
-card.textContent=signed(n);
+numbers.forEach(n=>{
 
-card.addEventListener("dragstart",e=>{
+let d=document.createElement("div");
+d.className='drag-number';
+d.draggable=true;
+d.innerText=sign(n);
+
+d.addEventListener("dragstart",e=>{
 e.dataTransfer.setData("text",n);
 });
 
-cards.appendChild(card);
+container.appendChild(d);
 
 });
-
 }
 
-function checkPlacement(){
+function checkPart1(){
 
-let hits=0;
-let feedback=[];
+let correct=0;
+let hints=[];
 
 document.querySelectorAll(".dropzone").forEach(z=>{
 
-z.classList.remove("correct");
-z.classList.remove("error");
+z.classList.remove("correct","wrong");
 
-if(z.dataset.placed!==undefined){
+const placed=z.dataset.placed;
 
-let placed=parseInt(z.dataset.placed);
-let correct=parseInt(z.dataset.value);
+if(placed!==undefined){
 
-if(placed===correct){
+if(Number(placed)===Number(z.dataset.value)){
 z.classList.add("correct");
-hits++;
+correct++;
 }else{
-z.classList.add("error");
-feedback.push(
-"El número "+signed(placed)+" está mal situado. Recuerda que cuanto más negativo sea un número, más a la izquierda se coloca."
-);
-}
-}
+z.classList.add("wrong");
 
+if(Number(placed)>Number(z.dataset.value)){
+hints.push(`${sign(Number(placed))} debe ir más a la izquierda.`);
+}else{
+hints.push(`${sign(Number(placed))} debe ir más a la derecha.`);
+}
+}
+}
 });
 
-score+=hits;
-updateScore();
+correctAnswers+=correct;
 
-let text="Aciertos: "+hits+" de 5.<br>";
+document.getElementById("feedback1").innerHTML=
+`✅ Aciertos: ${correct}/5<br>
+${hints.length?'<br>💡 '+hints.slice(0,3).join('<br>'):''}`;
 
-if(feedback.length){
-text+="<br>"+feedback[0];
-}else{
-text+="<span class='correctText'>¡Fantástico! Has colocado todos los números correctamente.</span>";
+document.getElementById("toScreen2").style.display='inline-block';
 }
 
-document.getElementById("placementFeedback").innerHTML=text;
+function generateQuestions(){
 
-document.getElementById("toScreen2").style.display="inline-block";
-}
-
-/* --------------------- PANTALLA 2 --------------------- */
-
-function createQuestions(){
-
-const container=document.getElementById("questionsContainer");
-container.innerHTML="";
-game.questions=[];
+questions=[];
 
 for(let i=0;i<5;i++){
 
 let start=randomInt(-10,10);
 let move=randomInt(2,8);
+let direction=Math.random()<0.5?'right':'left';
 
-let direction=Math.random()<0.5?"right":"left";
+let result=direction==='right'
+?start+move
+:start-move;
 
-let end=direction==="right" ? start+move : start-move;
+questions.push({
+start,
+move,
+direction,
+result
+});
+}
+}
 
-let q={
-start,move,direction,end
-};
+function buildQuestions(){
 
-game.questions.push(q);
+const c=document.getElementById("questionsContainer");
+c.innerHTML='';
 
-let div=document.createElement("div");
-div.className="question";
+questions.forEach((q,index)=>{
 
-let text=direction==="right"
-?`Si estamos en ${signed(start)} y avanzamos ${move} posiciones hacia la derecha, ¿a qué número llegamos?`
-:`Si estamos en ${signed(start)} y retrocedemos ${move} posiciones hacia la izquierda, ¿dónde terminamos?`;
+let txt=
+q.direction==='right'
+?`Si estamos en ${sign(q.start)} y avanzamos ${q.move} posiciones hacia la derecha, ¿a qué número llegamos?`
+:`Si estamos en ${sign(q.start)} y retrocedemos ${q.move} posiciones hacia la izquierda, ¿dónde terminamos?`;
 
-div.innerHTML=`
-<div>${i+1}. ${text}</div>
-<div style="margin-top:10px;">
+c.innerHTML+=`
+<div class="question">
+<strong>${index+1}. ${txt}</strong><br><br>
 Respuesta:
-<input type="number" id="q${i}">
+<input type="number" id="q${index}">
+<div id="r${index}" class="result"></div>
+<div id="v${index}" class="visual"></div>
 </div>
-<div class="result" id="r${i}"></div>
 `;
-
-container.appendChild(div);
+});
 }
 
-}
+function checkPart2(){
 
-function checkQuestions(){
+let correct=0;
 
-let localHits=0;
+questions.forEach((q,i)=>{
 
-game.questions.forEach((q,i)=>{
+const val=Number(document.getElementById("q"+i).value);
 
-let response=parseInt(document.getElementById("q"+i).value);
+let r=document.getElementById("r"+i);
+let v=document.getElementById("v"+i);
 
-let box=document.getElementById("r"+i);
+if(val===q.result){
 
-let visual = q.direction==="right"
-? `${signed(q.start)} → ${signed(q.end)} (avanzas ${q.move})`
-: `${signed(q.start)} → ${signed(q.end)} (retrocedes ${q.move})`;
-
-if(response===q.end){
-
-localHits++;
-box.innerHTML=
-'<span class="correctText">✔ Correcto</span>' +
-'<div class="visual">'+visual+'</div>';
+r.innerHTML="✅ Correcto";
+r.style.color="green";
+correct++;
 
 }else{
 
-box.innerHTML=
-'<span class="errorText">✘ Incorrecto. Resultado: '+signed(q.end)+'</span>'+
-'<div class="visual">'+visual+'</div>';
-
+r.innerHTML=`❌ Incorrecto. Resultado: ${sign(q.result)}`;
+r.style.color="red";
 }
+
+v.innerHTML=
+q.direction==='right'
+?`${sign(q.start)} → ${sign(q.result)} (avance de ${q.move})`
+:`${sign(q.start)} → ${sign(q.result)} (retroceso de ${q.move})`;
 
 });
 
-score+=localHits;
-updateScore();
+correctAnswers+=correct;
 
-document.getElementById("toScreen3").style.display="inline-block";
+document.getElementById("part2Result").innerHTML=
+`Has acertado ${correct} de 5 preguntas.`;
+
+document.getElementById("toScreen3").style.display='inline-block';
 }
 
-/* --------------------- PANTALLA 3 --------------------- */
+function generateChallenge(){
 
-function createChallenge(){
+let start=randomInt(-8,8);
 
-let start=randomInt(-10,10);
+let a=randomInt(2,7);
+let b=randomInt(2,6);
+let c=randomInt(2,7);
 
-let m1=randomInt(2,8);
-let m2=randomInt(2,8);
-let m3=randomInt(2,8);
+let final=start+a-b+c;
 
-let result=start+m1-m2+m3;
+challenge={
+start,a,b,c,final
+};
+}
 
-game.challenge={start,m1,m2,m3,result};
+function buildChallenge(){
 
-document.getElementById("challengeArea").innerHTML=`
-<div class="challenge">
-<p><strong>Comenzamos en ${signed(start)}</strong></p>
+document.getElementById("challengeText").innerHTML=`
+Comenzamos en <strong>${sign(challenge.start)}</strong>.<br><br>
 
-<ol>
-<li>Avanza ${m1} posiciones.</li>
-<li>Retrocede ${m2} posiciones.</li>
-<li>Avanza ${m3} posiciones.</li>
-</ol>
+1️⃣ Avanza <strong>${challenge.a}</strong> posiciones.<br>
+2️⃣ Retrocede <strong>${challenge.b}</strong> posiciones.<br>
+3️⃣ Avanza <strong>${challenge.c}</strong> posiciones.<br><br>
 
-<p>¿En qué número terminas?</p>
-
-<input type="number" id="challengeAnswer">
-
-</div>
+<strong>¿En qué número terminas?</strong>
 `;
 }
 
 function checkChallenge(){
 
-let answer=parseInt(
-document.getElementById("challengeAnswer").value
-);
+const val=Number(document.getElementById("challengeAnswer").value);
 
-let c=game.challenge;
+let fb=document.getElementById("challengeFeedback");
 
-let step1=c.start+c.m1;
-let step2=step1-c.m2;
-let step3=step2+c.m3;
+let p1=challenge.start+challenge.a;
+let p2=p1-challenge.b;
+let p3=p2+challenge.c;
 
-let html="";
-
-if(answer===c.result){
-score++;
-updateScore();
-html+='<p class="correctText">✔ Correcto</p>';
-}else{
-html+='<p class="errorText">✘ Incorrecto. Resultado: '+signed(c.result)+'</p>';
-}
-
-html+=`
-<h3>Explicación paso a paso</h3>
-
-<p>${signed(c.start)} + ${c.m1} = ${signed(step1)}</p>
-<p>${signed(step1)} - ${c.m2} = ${signed(step2)}</p>
-<p>${signed(step2)} + ${c.m3} = ${signed(step3)}</p>
+if(val===challenge.final){
+correctAnswers++;
+fb.innerHTML=`✅ Correcto.<br><br>
+${sign(challenge.start)} → ${sign(p1)} → ${sign(p2)} → ${sign(p3)}
 `;
-
-document.getElementById("challengeFeedback").innerHTML=html;
-
-showFinalSummary();
+}else{
+fb.innerHTML=`❌ Incorrecto.<br><br>
+Paso 1: ${sign(challenge.start)} + ${challenge.a} = ${sign(p1)}<br>
+Paso 2: ${sign(p1)} - ${challenge.b} = ${sign(p2)}<br>
+Paso 3: ${sign(p2)} + ${challenge.c} = ${sign(p3)}
+`;
 }
 
-function showFinalSummary(){
+setTimeout(showFinalResults,1200);
+}
 
-let percent=Math.round((score/11)*100);
+function showFinalResults(){
+
+showScreen(4);
+
+let percent=Math.round((correctAnswers/totalQuestions)*100);
 
 let msg="";
 
 if(percent>=90){
-msg="🏆 Excelente";
-}else if(percent>=70){
-msg="👏 Buen trabajo";
-}else if(percent>=50){
-msg="📘 Sigue practicando";
-}else{
-msg="🔁 Repasa la recta numérica y vuelve a intentarlo";
+msg="🌟 Excelente. Dominas muy bien la recta numérica.";
+}
+else if(percent>=70){
+msg="👏 Buen trabajo. Sigue avanzando.";
+}
+else if(percent>=50){
+msg="📘 Sigue practicando para ganar seguridad.";
+}
+else{
+msg="🔁 Repasa la recta numérica y vuelve a intentarlo.";
 }
 
-document.getElementById("finalSummary").style.display="block";
+document.getElementById("finalStats").innerHTML=
+`<strong>Respuestas correctas:</strong> ${correctAnswers} de ${totalQuestions}`;
 
-document.getElementById("finalSummary").innerHTML=`
-<div class="finalBox">
+document.getElementById("finalPercent").innerHTML=
+percent+" %";
 
-<h2>Evaluación final</h2>
-
-<div class="summary">
-
-<p><strong>Respuestas correctas:</strong> ${score} de 11</p>
-
-<p><strong>Porcentaje de éxito:</strong> ${percent}%</p>
-
-<p><strong>${msg}</strong></p>
-
-<button class="btn warning" onclick="startGame()">
-🎮 Jugar otra partida
-</button>
-
-</div>
-
-</div>
-`;
+document.getElementById("finalMessage").innerHTML=
+msg;
 }
 
-startGame();
+function newGame(){
 
+correctAnswers=0;
+selectedDrops={};
+
+numbers=generateNumbers();
+generateQuestions();
+generateChallenge();
+
+buildLine();
+buildNumbers();
+buildQuestions();
+buildChallenge();
+
+document.getElementById("feedback1").innerHTML='';
+document.getElementById("part2Result").innerHTML='';
+document.getElementById("challengeFeedback").innerHTML='';
+
+document.getElementById("toScreen2").style.display='none';
+document.getElementById("toScreen3").style.display='none';
+
+showScreen(1);
+}
+
+newGame();
 </script>
-
 </body>
 </html>
