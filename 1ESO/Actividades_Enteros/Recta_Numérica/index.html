@@ -349,7 +349,13 @@ line.appendChild(tick);
 let label=document.createElement("div");
 label.className="tick-label";
 label.style.left=pos+"%";
-label.textContent=i;
+
+if(i===0){
+    label.textContent="0";
+}else{
+    label.textContent="";
+}
+
 line.appendChild(label);
 
 let zone=document.createElement("div");
