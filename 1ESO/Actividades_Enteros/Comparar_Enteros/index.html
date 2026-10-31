@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparación de números enteros</title>
+
+<style>
+/* ==========================
+   ESTILOS GENERALES
+========================== */
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(135deg,#eaf6ff,#eefcf4);
+    color:#1f2937;
+}
+
+.contenedor{
+    max-width:900px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.descripcion{
+    text-align:center;
+    margin-bottom:25px;
+    color:#374151;
+}
+
+.ejercicios{
+    display:grid;
+    gap:16px;
+}
+
+/* ==========================
+   TARJETAS
+========================== */
+.tarjeta{
+    background:white;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.enunciado{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+.numero{
+    min-width:70px;
+    text-align:center;
+}
+
+select{
+    font-size:1.1rem;
+    padding:8px 12px;
+    border-radius:8px;
+    border:2px solid #cbd5e1;
+    cursor:pointer;
+}
+
+.resultado{
+    margin-top:12px;
+    font-weight:bold;
+}
+
+.correcto{
+    color:#15803d;
+}
+
+.incorrecto{
+    color:#dc2626;
+}
+
+.explicacion{
+    margin-top:6px;
+    font-size:0.95rem;
+    font-weight:normal;
+}
+
+/* ==========================
+   BOTONES
+========================== */
+.botones{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+button{
+    border:none;
+    border-radius:10px;
+    padding:12px 20px;
+    font-size:1rem;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+#comprobar{
+    background:#2563eb;
+    color:white;
+}
+
+#comprobar:hover{
+    background:#1d4ed8;
+}
+
+#nuevo{
+    background:#10b981;
+    color:white;
+}
+
+#nuevo:hover{
+    background:#059669;
+}
+
+#puntuacion{
+    text-align:center;
+    font-size:1.3rem;
+    font-weight:bold;
+    margin-top:20px;
+}
+
+.aviso{
+    text-align:center;
+    color:#dc2626;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+@media (max-width:600px){
+
+    .enunciado{
+        font-size:1.2rem;
+    }
+
+    select{
+        width:90px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Comparación de números enteros</h1>
+
+    <p class="descripcion">
+        Selecciona el símbolo correcto para comparar cada pareja de números.
+    </p>
+
+    <div id="ejercicios" class="ejercicios"></div>
+
+    <div class="botones">
+        <button id="comprobar">Comprobar respuestas</button>
+        <button id="nuevo">Nueva actividad</button>
+    </div>
+
+    <div id="aviso" class="aviso"></div>
+    <div id="puntuacion"></div>
+
+</div>
+
+<script>
+/* ==================================================
+   GENERACIÓN DE EJERCICIOS
+================================================== */
+
+const contenedorEjercicios = document.getElementById("ejercicios");
+const puntuacionDiv = document.getElementById("puntuacion");
+const avisoDiv = document.getElementById("aviso");
+
+let ejercicios = [];
+
+/**
+ * Devuelve un entero aleatorio entre min y max.
+ */
+function enteroAleatorio(min, max){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/**
+ * Genera una lista de 10 números distintos
+ * (para que ninguno se repita en toda la actividad).
+ */
+function generarNumerosUnicos(cantidad){
+    const numeros = new Set();
+
+    while(numeros.size < cantidad){
+        numeros.add(enteroAleatorio(-20,20));
+    }
+
+    return [...numeros];
+}
+
+/**
+ * Devuelve el símbolo correcto.
+ */
+function obtenerComparacion(a,b){
+    if(a > b) return ">";
+    if(a < b) return "<";
+    return "=";
+}
+
+/**
+ * Genera los 5 ejercicios.
+ */
+function generarActividad(){
+
+    ejercicios = [];
+    puntuacionDiv.textContent = "";
+    avisoDiv.textContent = "";
+    contenedorEjercicios.innerHTML = "";
+
+    const numeros = generarNumerosUnicos(10);
+
+    for(let i=0;i<5;i++){
+
+        const n1 = numeros[i*2];
+        const n2 = numeros[i*2+1];
+
+        ejercicios.push({
+            a:n1,
+            b:n2,
+            correcta:obtenerComparacion(n1,n2)
+        });
+    }
+
+    pintarEjercicios();
+}
+
+/**
+ * Muestra las tarjetas.
+ */
+function pintarEjercicios(){
+
+    ejercicios.forEach((ejercicio,index)=>{
+
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta";
+
+        tarjeta.innerHTML = `
+            <div class="enunciado">
+                <span class="numero">${ejercicio.a}</span>
+
+                <select id="respuesta-${index}">
+                    <option value="">?</option>
+                    <option value="<">&lt;</option>
+                    <option value=">">&gt;</option>
+                    <option value="=">=</option>
+                </select>
+
+                <span class="numero">${ejercicio.b}</span>
+            </div>
+
+            <div id="resultado-${index}" class="resultado"></div>
+        `;
+
+        contenedorEjercicios.appendChild(tarjeta);
+    });
+}
+
+/* ==================================================
+   CORRECCIÓN
+================================================== */
+
+function comprobar(){
+
+    avisoDiv.textContent = "";
+
+    // Verificar que todos estén respondidos
+    for(let i=0;i<ejercicios.length;i++){
+
+        const seleccion =
+        document.getElementById(`respuesta-${i}`).value;
+
+        if(seleccion === ""){
+            avisoDiv.textContent =
+            "Debes responder todos los ejercicios antes de comprobar.";
+            return;
+        }
+    }
+
+    let aciertos = 0;
+
+    ejercicios.forEach((ejercicio,index)=>{
+
+        const seleccion =
+        document.getElementById(`respuesta-${index}`).value;
+
+        const resultado =
+        document.getElementById(`resultado-${index}`);
+
+        if(seleccion === ejercicio.correcta){
+
+            aciertos++;
+
+            resultado.innerHTML = `
+                <div class="correcto">
+                    ✅ Correcto
+                </div>
+            `;
+        }
+        else{
+
+            resultado.innerHTML = `
+                <div class="incorrecto">
+                    ❌ Incorrecto
+                    <div class="explicacion">
+                        ${generarExplicacion(
+                            ejercicio.a,
+                            ejercicio.b,
+                            ejercicio.correcta
+                        )}
+                    </div>
+                </div>
+            `;
+        }
+
+    });
+
+    puntuacionDiv.innerHTML =
+    `Puntuación: ${aciertos} / 5`;
+}
+
+/* ==================================================
+   EXPLICACIONES DIDÁCTICAS
+================================================== */
+
+function generarExplicacion(a,b,correcta){
+
+    if(correcta === ">"){
+        return `
+        El símbolo correcto es <strong>&gt;</strong>
+        porque ${a} es mayor que ${b}. En la recta
+        numérica, ${a} está más a la derecha que ${b}.
+        `;
+    }
+
+    if(correcta === "<"){
+        return `
+        El símbolo correcto es <strong>&lt;</strong>
+        porque ${a} es menor que ${b}. En la recta
+        numérica, ${a} está más a la izquierda que ${b}.
+        `;
+    }
+
+    return `
+    El símbolo correcto es <strong>=</strong>
+    porque ambos números tienen el mismo valor.
+    `;
+}
+
+/* ==================================================
+   EVENTOS
+================================================== */
+
+document
+.getElementById("comprobar")
+.addEventListener("click", comprobar);
+
+document
+.getElementById("nuevo")
+.addEventListener("click", generarActividad);
+
+/* ==================================================
+   INICIO
+================================================== */
+
+generarActividad();
+
+</script>
+
+</body>
+</html>
