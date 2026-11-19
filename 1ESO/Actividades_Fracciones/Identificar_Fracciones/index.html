@@ -1,0 +1,1649 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>¿Qué fracción soy?</title>
+
+<style>
+:root {
+  --ink: #17324d;
+  --blue: #4361ee;
+  --cyan: #4cc9f0;
+  --pink: #f72585;
+  --yellow: #ffd166;
+  --green: #2fb344;
+  --orange: #f08c00;
+  --paper: #fff;
+  --muted: #64748b;
+  --shadow: 0 16px 40px #25385822;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 10%, #fff7cc 0 12%, transparent 13%),
+    radial-gradient(circle at 90% 15%, #d8f5ff 0 13%, transparent 14%),
+    linear-gradient(145deg, #f7fbff, #fdf6ff);
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  width: min(1080px, 100%);
+  margin: auto;
+  padding: 20px;
+}
+
+.screen {
+  display: none;
+  animation: fade 0.3s ease;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.card {
+  padding: clamp(18px, 4vw, 36px);
+  background: #fffc;
+  border: 1px solid #fff;
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+/* Portada */
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 0.1em 0;
+  color: var(--blue);
+  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  letter-spacing: -0.04em;
+}
+
+.hero p {
+  margin: 0.2em 0 1em;
+  color: #52657a;
+  font-size: clamp(1rem, 2.7vw, 1.35rem);
+}
+
+/*
+  La ilustración tiene una zona propia y no puede superponerse
+  con el título de la aplicación.
+*/
+.cover {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 620px;
+  height: 190px;
+  margin: 6px auto 28px;
+  overflow: hidden;
+}
+
+.cover svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 190px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.btn {
+  min-height: 52px;
+  padding: 15px 22px;
+  border: 0;
+  border-radius: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #0002;
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.btn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  box-shadow: 0 4px 0 #0002;
+  transform: translateY(4px);
+}
+
+.btn:focus-visible,
+.key:focus-visible {
+  outline: 4px solid #1118;
+  outline-offset: 3px;
+}
+
+.basic {
+  color: #07334a;
+  background: var(--cyan);
+}
+
+.advanced {
+  color: white;
+  background: var(--pink);
+}
+
+.secondary {
+  color: var(--ink);
+  background: #e9eef6;
+}
+
+.primary {
+  color: white;
+  background: var(--blue);
+}
+
+.next {
+  color: #5c3b00;
+  background: var(--yellow);
+}
+
+/* Cabecera del juego */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pill {
+  padding: 9px 14px;
+  background: white;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.progress {
+  flex: 1;
+  min-width: 160px;
+  height: 14px;
+  overflow: hidden;
+  background: #e5eaf1;
+  border-radius: 999px;
+}
+
+.progress > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--blue));
+  transition: width 0.3s;
+}
+
+/* Zona de juego */
+.gamegrid {
+  display: grid;
+  grid-template-columns: minmax(270px, 1.3fr) minmax(270px, 0.8fr);
+  gap: 22px;
+}
+
+.figurebox {
+  display: grid;
+  place-items: center;
+  min-height: 380px;
+  padding: 14px;
+  background: linear-gradient(145deg, #fff, #f4f8ff);
+  border: 3px dashed #cad7e6;
+  border-radius: 24px;
+}
+
+.figurebox svg {
+  width: 100%;
+  max-height: 360px;
+}
+
+.panel {
+  text-align: center;
+}
+
+.panel h2 {
+  margin: 0.2em;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+/* Entrada de la fracción */
+.fraction {
+  display: inline-grid;
+  grid-template-rows: auto 5px auto;
+  gap: 7px;
+  width: 105px;
+  margin: 6px auto 14px;
+}
+
+.slot {
+  display: grid;
+  place-items: center;
+  height: 58px;
+  overflow: hidden;
+  background: #fff;
+  border: 3px solid #b7c4d3;
+  border-radius: 12px;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.slot.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 5px #4361ee24;
+}
+
+.bar {
+  background: var(--ink);
+  border-radius: 4px;
+}
+
+/* Teclado */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 330px;
+  margin: auto;
+}
+
+.key {
+  min-height: 48px;
+  background: #fff;
+  border: 0;
+  border-radius: 13px;
+  box-shadow: 0 4px 0 #d5dce7;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.key.arrow {
+  color: #263da2;
+  background: #dfe6ff;
+}
+
+.key.clear {
+  color: #9b1c1c;
+  background: #ffe0e0;
+}
+
+.check {
+  grid-column: 1 / -1;
+  margin-top: 7px;
+}
+
+.feedback {
+  min-height: 54px;
+  margin: 14px 0 4px;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.feedback.ok {
+  color: var(--green);
+}
+
+.feedback.bad {
+  color: var(--orange);
+}
+
+/* Resultados */
+.results h1 {
+  text-align: center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.stat {
+  padding: 18px;
+  background: #f0f5ff;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 2rem;
+}
+
+.result-list {
+  display: grid;
+  gap: 10px;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #f7f9fc;
+  border-radius: 16px;
+}
+
+.thumb svg {
+  width: 70px;
+  height: 56px;
+}
+
+.good {
+  color: var(--green);
+  font-weight: 900;
+}
+
+.wrong {
+  color: #d9480f;
+  font-weight: 900;
+}
+
+.motivation {
+  color: var(--blue);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Adaptación a móviles */
+@media (max-width: 720px) {
+  .gamegrid {
+    grid-template-columns: 1fr;
+  }
+
+  .figurebox {
+    min-height: 280px;
+  }
+
+  .result-row {
+    grid-template-columns: 62px 1fr 1fr;
+  }
+
+  .result-row .status {
+    grid-column: 2 / -1;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .app {
+    padding: 10px;
+  }
+
+  .card {
+    border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+  <!-- Pantalla de inicio -->
+  <section id="home" class="screen active">
+    <div class="card hero">
+      <div id="cover" class="cover" aria-hidden="true"></div>
+
+      <h1>¿Qué fracción soy?</h1>
+
+      <p>Demuestra que eres un experto identificando fracciones</p>
+
+      <div class="buttons">
+        <button class="btn basic" data-level="basic" type="button">
+          Nivel básico
+        </button>
+
+        <button class="btn advanced" data-level="advanced" type="button">
+          Nivel avanzado
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla de juego -->
+  <section id="game" class="screen">
+    <div class="topbar">
+      <button id="quit" class="btn secondary" type="button">
+        ← Inicio
+      </button>
+
+      <span id="levelPill" class="pill"></span>
+
+      <div class="progress" aria-label="Progreso de la partida">
+        <div id="progressBar"></div>
+      </div>
+
+      <span id="scorePill" class="pill"></span>
+    </div>
+
+    <div class="card gamegrid">
+      <div
+        id="figure"
+        class="figurebox"
+        aria-label="Representación gráfica de una fracción">
+      </div>
+
+      <div class="panel">
+        <h2>¿Qué fracción soy?</h2>
+
+        <p id="instruction">
+          Introduce numerador y denominador
+        </p>
+
+        <div class="fraction" aria-label="Respuesta">
+          <div id="numSlot" class="slot active">&nbsp;</div>
+          <div class="bar"></div>
+          <div id="denSlot" class="slot">&nbsp;</div>
+        </div>
+
+        <div id="keypad" class="keypad"></div>
+
+        <div
+          id="feedback"
+          class="feedback"
+          aria-live="polite">
+        </div>
+
+        <button id="next" class="btn next" type="button" hidden>
+          Siguiente fracción →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla de resultados -->
+  <section id="results" class="screen">
+    <div class="card results">
+      <h1>Resultados</h1>
+
+      <p id="motivation" class="motivation"></p>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="hits">0</strong>
+          Aciertos
+        </div>
+
+        <div class="stat">
+          <strong id="errors">0</strong>
+          Errores
+        </div>
+
+        <div class="stat">
+          <strong id="percent">0%</strong>
+          Éxito
+        </div>
+      </div>
+
+      <div id="resultList" class="result-list"></div>
+
+      <div class="buttons" style="margin-top: 20px">
+        <button id="replay" class="btn primary" type="button">
+          Jugar de nuevo
+        </button>
+
+        <button id="other" class="btn advanced" type="button">
+          Elegir otro nivel
+        </button>
+
+        <button id="homeBtn" class="btn secondary" type="button">
+          Volver al inicio
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+"use strict";
+
+/* ==========================================================
+   CONFIGURACIÓN GENERAL
+   ========================================================== */
+
+const CONFIG = {
+  coverRenderer: "renderCover",
+  colors: {
+    fill: "#4361ee",
+    empty: "#e8eef7",
+    line: "#17324d"
+  }
+};
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+const state = {
+  level: null,
+  exercises: [],
+  index: 0,
+  score: 0,
+  errors: 0,
+  answer: {
+    numerator: "",
+    denominator: ""
+  },
+  active: "numerator",
+  locked: false,
+  results: []
+};
+
+const okMessages = [
+  "¡Excelente!",
+  "¡Muy bien!",
+  "¡Correcto!",
+  "¡Genial!",
+  "¡Eres un campeón de las fracciones!"
+];
+
+const badMessages = [
+  "Sigue intentándolo.",
+  "Casi lo consigues.",
+  "Revisa la figura con atención.",
+  "No pasa nada, inténtalo de nuevo.",
+  "Seguro que la siguiente sale mejor."
+];
+
+/* ==========================================================
+   FUNCIONES AUXILIARES
+   ========================================================== */
+
+function $(selector) {
+  return document.querySelector(selector);
+}
+
+function randomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function gcd(a, b) {
+  return b ? gcd(b, a % b) : a;
+}
+
+function svgElement(name, attributes = {}) {
+  const element = document.createElementNS(SVG_NS, name);
+
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, value);
+  }
+
+  return element;
+}
+
+function createSVG(viewBox = "0 0 420 300") {
+  return svgElement("svg", {
+    viewBox,
+    role: "img",
+    "aria-label": "Figura dividida en partes iguales",
+    preserveAspectRatio: "xMidYMid meet"
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.remove("active");
+  });
+
+  $("#" + id).classList.add("active");
+}
+
+/* ==========================================================
+   VALIDACIÓN MATEMÁTICA
+   ========================================================== */
+
+function isValidFraction(numerator, denominator, minimum, maximum) {
+  return (
+    Number.isInteger(numerator) &&
+    Number.isInteger(denominator) &&
+    denominator >= minimum &&
+    denominator <= maximum &&
+    numerator > 0 &&
+    numerator < denominator &&
+    gcd(numerator, denominator) === 1
+  );
+}
+
+function validateExercise(exercise) {
+  if (!exercise) {
+    return false;
+  }
+
+  const minimum = exercise.level === "basic" ? 2 : 4;
+  const maximum = exercise.level === "basic" ? 10 : 12;
+
+  const correctKey =
+    `${exercise.level}-${exercise.renderer}-` +
+    `${exercise.fraction.numerator}-` +
+    `${exercise.fraction.denominator}-` +
+    `${exercise.variant}`;
+
+  return (
+    isValidFraction(
+      exercise.fraction.numerator,
+      exercise.fraction.denominator,
+      minimum,
+      maximum
+    ) &&
+    typeof renderers[exercise.renderer] === "function" &&
+    exercise.key === correctKey
+  );
+}
+
+function makeExercise(
+  level,
+  renderer,
+  numerator,
+  denominator,
+  variant = 0,
+  difficulty = denominator
+) {
+  return {
+    level,
+    renderer,
+    fraction: {
+      numerator,
+      denominator
+    },
+    variant,
+    difficulty,
+    key:
+      `${level}-${renderer}-${numerator}-` +
+      `${denominator}-${variant}`
+  };
+}
+
+/* ==========================================================
+   GENERACIÓN DE EJERCICIOS
+   ========================================================== */
+
+function generateExercises(level) {
+  const pool = [];
+
+  if (level === "basic") {
+    for (let denominator = 2; denominator <= 10; denominator++) {
+      for (
+        let numerator = 1;
+        numerator < denominator;
+        numerator++
+      ) {
+        if (gcd(numerator, denominator) !== 1) {
+          continue;
+        }
+
+        ["circle", "rect", "bar", "grid"].forEach(
+          (renderer, variant) => {
+            pool.push(
+              makeExercise(
+                level,
+                renderer,
+                numerator,
+                denominator,
+                variant,
+                denominator + numerator / denominator
+              )
+            );
+          }
+        );
+      }
+    }
+  } else {
+    /*
+      En el nivel avanzado solo se emplean figuras planas
+      vistas completamente de frente.
+
+      Se excluyen trapecios oblicuos y cualquier dibujo
+      que pueda dar sensación de profundidad o perspectiva.
+    */
+    for (let denominator = 4; denominator <= 12; denominator++) {
+      for (
+        let numerator = 1;
+        numerator < denominator;
+        numerator++
+      ) {
+        if (gcd(numerator, denominator) !== 1) {
+          continue;
+        }
+
+        const types = ["hiddenRect"];
+
+        if (denominator >= 5 && denominator <= 10) {
+          types.push("polygon");
+        }
+
+        if (denominator === 6 || denominator === 12) {
+          types.push("hexagon");
+        }
+
+        if (denominator === 6) {
+          types.push("triangle");
+        }
+
+        types.forEach((renderer, variant) => {
+          pool.push(
+            makeExercise(
+              level,
+              renderer,
+              numerator,
+              denominator,
+              variant,
+              denominator + numerator / denominator
+            )
+          );
+        });
+      }
+    }
+  }
+
+  const validExercises = pool.filter(validateExercise);
+
+  /*
+    Primero se mezcla el conjunto para que, dentro de cada
+    intervalo de dificultad, los ejercicios sean aleatorios.
+  */
+  validExercises.sort(() => Math.random() - 0.5);
+
+  /*
+    Después se ordenan por dificultad y se dividen en cinco
+    intervalos. De cada intervalo se obtiene un ejercicio.
+  */
+  validExercises.sort(
+    (a, b) => a.difficulty - b.difficulty
+  );
+
+  const bands = [[], [], [], [], []];
+
+  validExercises.forEach((exercise, index) => {
+    const bandIndex = Math.min(
+      4,
+      Math.floor(index * 5 / validExercises.length)
+    );
+
+    bands[bandIndex].push(exercise);
+  });
+
+  const chosen = [];
+  const usedKeys = new Set();
+
+  for (const band of bands) {
+    let candidates = band.filter(
+      (exercise) => !usedKeys.has(exercise.key)
+    );
+
+    if (!candidates.length) {
+      candidates = validExercises.filter(
+        (exercise) => !usedKeys.has(exercise.key)
+      );
+    }
+
+    const exercise = randomItem(candidates);
+
+    chosen.push(exercise);
+    usedKeys.add(exercise.key);
+  }
+
+  return chosen.sort(
+    (a, b) => a.difficulty - b.difficulty
+  );
+}
+
+/* ==========================================================
+   FUNCIONES DE DIBUJO SVG
+   ========================================================== */
+
+function addSVGTitle(svg, exercise) {
+  const title = svgElement("title");
+
+  title.textContent =
+    `${exercise.fraction.numerator} de ` +
+    `${exercise.fraction.denominator} partes iguales coloreadas`;
+
+  svg.append(title);
+}
+
+/*
+  Rectángulo o barra dividida en partes iguales.
+  En el modo hidden se ocultan algunas líneas largas, pero
+  se mantienen pequeñas marcas en la parte superior.
+*/
+function renderLinear(exercise, options = {}) {
+  const svg = createSVG();
+
+  const numerator = exercise.fraction.numerator;
+  const denominator = exercise.fraction.denominator;
+
+  const x = 45;
+  const y = 85;
+  const width = 330;
+  const height = 130;
+
+  addSVGTitle(svg, exercise);
+
+  for (let index = 0; index < denominator; index++) {
+    let strokeWidth = 3;
+
+    if (
+      options.hidden &&
+      index > 0 &&
+      index < denominator
+    ) {
+      const sameColoredRegion =
+        index < numerator &&
+        index - 1 < numerator;
+
+      const sameEmptyRegion =
+        index >= numerator &&
+        index - 1 >= numerator;
+
+      if (sameColoredRegion || sameEmptyRegion) {
+        strokeWidth = 0;
+      }
+    }
+
+    svg.append(
+      svgElement("rect", {
+        x: x + index * width / denominator,
+        y,
+        width: width / denominator,
+        height,
+        fill:
+          index < numerator
+            ? CONFIG.colors.fill
+            : CONFIG.colors.empty,
+        stroke: CONFIG.colors.line,
+        "stroke-width": strokeWidth
+      })
+    );
+  }
+
+  if (options.hidden) {
+    for (let index = 1; index < denominator; index++) {
+      const divisionX = x + index * width / denominator;
+
+      svg.append(
+        svgElement("line", {
+          x1: divisionX,
+          y1: y - 8,
+          x2: divisionX,
+          y2: y + 8,
+          stroke: CONFIG.colors.line,
+          "stroke-width": 2
+        })
+      );
+    }
+  }
+
+  return svg;
+}
+
+/* Círculo dividido en sectores iguales. */
+function renderCircle(exercise) {
+  const svg = createSVG();
+
+  const numerator = exercise.fraction.numerator;
+  const denominator = exercise.fraction.denominator;
+
+  const centerX = 210;
+  const centerY = 150;
+  const radius = 112;
+
+  addSVGTitle(svg, exercise);
+
+  for (let index = 0; index < denominator; index++) {
+    const angle1 =
+      -Math.PI / 2 +
+      index * 2 * Math.PI / denominator;
+
+    const angle2 =
+      -Math.PI / 2 +
+      (index + 1) * 2 * Math.PI / denominator;
+
+    const path =
+      `M ${centerX} ${centerY} ` +
+      `L ${centerX + radius * Math.cos(angle1)} ` +
+      `${centerY + radius * Math.sin(angle1)} ` +
+      `A ${radius} ${radius} 0 0 1 ` +
+      `${centerX + radius * Math.cos(angle2)} ` +
+      `${centerY + radius * Math.sin(angle2)} Z`;
+
+    svg.append(
+      svgElement("path", {
+        d: path,
+        fill:
+          index < numerator
+            ? CONFIG.colors.fill
+            : CONFIG.colors.empty,
+        stroke: CONFIG.colors.line,
+        "stroke-width": 3
+      })
+    );
+  }
+
+  return svg;
+}
+
+/* Cuadrícula sencilla con partes iguales. */
+function renderGrid(exercise) {
+  const svg = createSVG();
+
+  const numerator = exercise.fraction.numerator;
+  const denominator = exercise.fraction.denominator;
+
+  addSVGTitle(svg, exercise);
+
+  const columns = Math.ceil(Math.sqrt(denominator));
+  const rows = Math.ceil(denominator / columns);
+  const size = Math.min(70, 280 / columns);
+
+  const originX = (420 - columns * size) / 2;
+  const originY = (300 - rows * size) / 2;
+
+  for (let index = 0; index < denominator; index++) {
+    const x = originX + (index % columns) * size;
+    const y =
+      originY +
+      Math.floor(index / columns) * size;
+
+    svg.append(
+      svgElement("rect", {
+        x,
+        y,
+        width: size,
+        height: size,
+        rx: 5,
+        fill:
+          index < numerator
+            ? CONFIG.colors.fill
+            : CONFIG.colors.empty,
+        stroke: CONFIG.colors.line,
+        "stroke-width": 3
+      })
+    );
+  }
+
+  return svg;
+}
+
+/*
+  Polígono regular visto de frente.
+  Se divide mediante sectores triangulares de igual área.
+*/
+function renderPolygon(exercise) {
+  const svg = createSVG();
+
+  const numerator = exercise.fraction.numerator;
+  const denominator = exercise.fraction.denominator;
+
+  const centerX = 210;
+  const centerY = 150;
+  const radius = 120;
+
+  addSVGTitle(svg, exercise);
+
+  for (let index = 0; index < denominator; index++) {
+    const angle1 =
+      -Math.PI / 2 +
+      index * 2 * Math.PI / denominator;
+
+    const angle2 =
+      -Math.PI / 2 +
+      (index + 1) * 2 * Math.PI / denominator;
+
+    const points =
+      `${centerX},${centerY} ` +
+      `${centerX + radius * Math.cos(angle1)},` +
+      `${centerY + radius * Math.sin(angle1)} ` +
+      `${centerX + radius * Math.cos(angle2)},` +
+      `${centerY + radius * Math.sin(angle2)}`;
+
+    /*
+      En el nivel avanzado se muestran solo algunas líneas.
+      La frontera entre la zona coloreada y la no coloreada
+      permanece visible, por lo que no hay ambigüedad.
+    */
+    const visibleStroke =
+      index === 0 ||
+      index === numerator ||
+      index === denominator - 1;
+
+    svg.append(
+      svgElement("polygon", {
+        points,
+        fill:
+          index < numerator
+            ? CONFIG.colors.fill
+            : CONFIG.colors.empty,
+        stroke:
+          visibleStroke
+            ? CONFIG.colors.line
+            : "none",
+        "stroke-width": 3
+      })
+    );
+  }
+
+  const outerPoints = Array.from(
+    { length: denominator },
+    (_, index) => {
+      const angle =
+        -Math.PI / 2 +
+        index * 2 * Math.PI / denominator;
+
+      return (
+        `${centerX + radius * Math.cos(angle)},` +
+        `${centerY + radius * Math.sin(angle)}`
+      );
+    }
+  ).join(" ");
+
+  svg.append(
+    svgElement("polygon", {
+      points: outerPoints,
+      fill: "none",
+      stroke: CONFIG.colors.line,
+      "stroke-width": 4
+    })
+  );
+
+  svg.append(
+    svgElement("circle", {
+      cx: centerX,
+      cy: centerY,
+      r: 5,
+      fill: CONFIG.colors.line
+    })
+  );
+
+  return svg;
+}
+
+/*
+  Hexágono regular visto de frente, dividido en seis
+  triángulos de igual área.
+*/
+function renderTriangleDivision(exercise) {
+  const svg = createSVG();
+
+  const numerator = exercise.fraction.numerator;
+
+  const centerX = 210;
+  const centerY = 150;
+  const radius = 120;
+
+  addSVGTitle(svg, exercise);
+
+  for (let index = 0; index < 6; index++) {
+    const angle1 =
+      -Math.PI / 2 +
+      index * Math.PI / 3;
+
+    const angle2 =
+      -Math.PI / 2 +
+      (index + 1) * Math.PI / 3;
+
+    const points =
+      `${centerX},${centerY} ` +
+      `${centerX + radius * Math.cos(angle1)},` +
+      `${centerY + radius * Math.sin(angle1)} ` +
+      `${centerX + radius * Math.cos(angle2)},` +
+      `${centerY + radius * Math.sin(angle2)}`;
+
+    const visibleStroke =
+      index === 0 ||
+      index === numerator ||
+      index === 5;
+
+    svg.append(
+      svgElement("polygon", {
+        points,
+        fill:
+          index < numerator
+            ? CONFIG.colors.fill
+            : CONFIG.colors.empty,
+        stroke:
+          visibleStroke
+            ? CONFIG.colors.line
+            : "none",
+        "stroke-width": 3
+      })
+    );
+  }
+
+  const outerPoints = Array.from(
+    { length: 6 },
+    (_, index) => {
+      const angle =
+        -Math.PI / 2 +
+        index * Math.PI / 3;
+
+      return (
+        `${centerX + radius * Math.cos(angle)},` +
+        `${centerY + radius * Math.sin(angle)}`
+      );
+    }
+  ).join(" ");
+
+  svg.append(
+    svgElement("polygon", {
+      points: outerPoints,
+      fill: "none",
+      stroke: CONFIG.colors.line,
+      "stroke-width": 4
+    })
+  );
+
+  svg.append(
+    svgElement("circle", {
+      cx: centerX,
+      cy: centerY,
+      r: 5,
+      fill: CONFIG.colors.line
+    })
+  );
+
+  return svg;
+}
+
+/*
+  Relación entre el nombre interno de una representación
+  y la función responsable de dibujarla.
+*/
+const renderers = {
+  circle: renderCircle,
+  rect: (exercise) => renderLinear(exercise),
+  bar: (exercise) => renderLinear(exercise),
+  grid: renderGrid,
+  hiddenRect: (exercise) =>
+    renderLinear(exercise, { hidden: true }),
+  polygon: renderPolygon,
+  hexagon: renderPolygon,
+  triangle: renderTriangleDivision
+};
+
+/* ==========================================================
+   ILUSTRACIÓN DE PORTADA
+   ========================================================== */
+
+function renderCover() {
+  const exercise = makeExercise(
+    "basic",
+    "circle",
+    3,
+    5,
+    0,
+    1
+  );
+
+  const svg = renderCircle(exercise);
+
+  /*
+    El viewBox ampliado proporciona espacio alrededor de la
+    figura y evita que invada el título.
+  */
+  svg.setAttribute("viewBox", "0 0 420 330");
+  svg.setAttribute(
+    "preserveAspectRatio",
+    "xMidYMid meet"
+  );
+
+  const stars = svgElement("g");
+
+  [
+    [45, 52],
+    [365, 45],
+    [55, 260],
+    [355, 250]
+  ].forEach(([x, y]) => {
+    const star = svgElement("text", {
+      x,
+      y,
+      "font-size": 34,
+      fill: "#f72585"
+    });
+
+    star.textContent = "★";
+    stars.append(star);
+  });
+
+  svg.append(stars);
+
+  return svg;
+}
+
+/* ==========================================================
+   CONTROL DE LA PARTIDA
+   ========================================================== */
+
+function startGame(level) {
+  state.level = level;
+  state.exercises = generateExercises(level);
+  state.index = 0;
+  state.score = 0;
+  state.errors = 0;
+  state.results = [];
+
+  showScreen("game");
+  loadExercise();
+}
+
+function loadExercise() {
+  state.answer = {
+    numerator: "",
+    denominator: ""
+  };
+
+  state.active = "numerator";
+  state.locked = false;
+
+  $("#feedback").textContent = "";
+  $("#feedback").className = "feedback";
+  $("#next").hidden = true;
+
+  $("#levelPill").textContent =
+    state.level === "basic"
+      ? "Nivel básico"
+      : "Nivel avanzado";
+
+  $("#scorePill").textContent =
+    `Puntos: ${state.score}`;
+
+  $("#progressBar").style.width =
+    `${state.index / 5 * 100}%`;
+
+  const exercise = state.exercises[state.index];
+
+  if (!validateExercise(exercise)) {
+    state.exercises = generateExercises(state.level);
+    state.index = 0;
+    loadExercise();
+    return;
+  }
+
+  $("#figure").replaceChildren(
+    renderersexercise
+  );
+
+  updateAnswerSlots();
+}
+
+function updateAnswerSlots() {
+  $("#numSlot").textContent =
+    state.answer.numerator || " ";
+
+  $("#denSlot").textContent =
+    state.answer.denominator || " ";
+
+  $("#numSlot").classList.toggle(
+    "active",
+    state.active === "numerator"
+  );
+
+  $("#denSlot").classList.toggle(
+    "active",
+    state.active === "denominator"
+  );
+}
+
+/* ==========================================================
+   TECLADO NUMÉRICO
+   ========================================================== */
+
+function inputKey(key) {
+  if (state.locked) {
+    return;
+  }
+
+  if (/^\d$/.test(key)) {
+    const currentValue = state.answer[state.active];
+
+    /*
+      Los denominadores llegan como máximo a 12, pero se
+      permiten dos cifras para ambas casillas.
+    */
+    if (
+      currentValue.length < 2 &&
+      !(currentValue === "" && key === "0")
+    ) {
+      state.answer[state.active] =
+        currentValue + key;
+    }
+  } else if (key === "→") {
+    state.active = "denominator";
+  } else if (key === "←") {
+    state.active = "numerator";
+  } else if (key === "⌫") {
+    state.answer[state.active] =
+      state.answer[state.active].slice(0, -1);
+  }
+
+  updateAnswerSlots();
+}
+
+/* ==========================================================
+   CORRECCIÓN
+   ========================================================== */
+
+function checkAnswer() {
+  if (state.locked) {
+    return;
+  }
+
+  const numerator = Number(
+    state.answer.numerator
+  );
+
+  const denominator = Number(
+    state.answer.denominator
+  );
+
+  if (
+    !state.answer.numerator ||
+    !state.answer.denominator ||
+    denominator === 0
+  ) {
+    $("#feedback").textContent =
+      "Completa las dos casillas con un denominador distinto de cero.";
+
+    $("#feedback").className =
+      "feedback bad";
+
+    return;
+  }
+
+  const exercise =
+    state.exercises[state.index];
+
+  /*
+    La corrección está desacoplada de la representación.
+    Se comparan exactamente numerador y denominador.
+  */
+  const correct =
+    numerator === exercise.fraction.numerator &&
+    denominator === exercise.fraction.denominator;
+
+  state.locked = true;
+
+  if (correct) {
+    state.score++;
+  } else {
+    state.errors++;
+  }
+
+  state.results.push({
+    exercise,
+    answer: {
+      numerator,
+      denominator
+    },
+    correct
+  });
+
+  $("#feedback").textContent = randomItem(
+    correct ? okMessages : badMessages
+  );
+
+  $("#feedback").className =
+    "feedback " + (correct ? "ok" : "bad");
+
+  $("#scorePill").textContent =
+    `Puntos: ${state.score}`;
+
+  $("#next").hidden = false;
+}
+
+function goToNextExercise() {
+  state.index++;
+
+  if (state.index === 5) {
+    finishGame();
+  } else {
+    loadExercise();
+  }
+}
+
+/* ==========================================================
+   RESULTADOS
+   ========================================================== */
+
+function finishGame() {
+  showScreen("results");
+
+  $("#hits").textContent = state.score;
+  $("#errors").textContent = state.errors;
+
+  const percentage = Math.round(
+    state.score / 5 * 100
+  );
+
+  $("#percent").textContent =
+    percentage + "%";
+
+  if (percentage === 100) {
+    $("#motivation").textContent =
+      "¡Dominio total! Identificas las fracciones con precisión.";
+  } else if (percentage >= 80) {
+    $("#motivation").textContent =
+      "¡Muy buen resultado! Solo queda pulir algún detalle.";
+  } else if (percentage >= 60) {
+    $("#motivation").textContent =
+      "Vas por buen camino. Revisa las divisiones ocultas y vuelve a intentarlo.";
+  } else {
+    $("#motivation").textContent =
+      "Conviene repasar cómo se cuentan las partes iguales y las coloreadas.";
+  }
+
+  const resultList = $("#resultList");
+  resultList.replaceChildren();
+
+  state.results.forEach((result, index) => {
+    const row = document.createElement("div");
+    row.className = "result-row";
+
+    const thumbnail = document.createElement("div");
+    thumbnail.className = "thumb";
+
+    /*
+      Se reutiliza exactamente la misma función SVG que
+      generó la figura original.
+    */
+    thumbnail.append(
+      renderersresult.exercise
+      
+    );
+
+    const studentAnswer =
+      document.createElement("div");
+
+    studentAnswer.innerHTML =
+      `<strong>Tu respuesta</strong><br>` +
+      `${result.answer.numerator}/` +
+      `${result.answer.denominator}`;
+
+    const correctAnswer =
+      document.createElement("div");
+
+    correctAnswer.innerHTML =
+      `<strong>Solución</strong><br>` +
+      `${result.exercise.fraction.numerator}/` +
+      `${result.exercise.fraction.denominator}`;
+
+    const status = document.createElement("div");
+
+    status.className =
+      "status " +
+      (result.correct ? "good" : "wrong");
+
+    status.textContent =
+      result.correct
+        ? "✓ Correcto"
+        : "✗ Incorrecto";
+
+    row.append(
+      thumbnail,
+      studentAnswer,
+      correctAnswer,
+      status
+    );
+
+    resultList.append(row);
+  });
+
+  $("#progressBar").style.width = "100%";
+}
+
+/* ==========================================================
+   INICIALIZACIÓN
+   ========================================================== */
+
+function createKeypad() {
+  const keypad = $("#keypad");
+
+  const keys = [
+    "1", "2", "3", "4",
+    "5", "6", "7", "8",
+    "9", "←", "0", "→",
+    "⌫"
+  ];
+
+  keys.forEach((key) => {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "key";
+    button.textContent = key;
+
+    if (key === "←" || key === "→") {
+      button.classList.add("arrow");
+    }
+
+    if (key === "⌫") {
+      button.classList.add("clear");
+    }
+
+    if (key === "←") {
+      button.setAttribute(
+        "aria-label",
+        "Volver al numerador"
+      );
+    } else if (key === "→") {
+      button.setAttribute(
+        "aria-label",
+        "Pasar al denominador"
+      );
+    } else if (key === "⌫") {
+      button.setAttribute(
+        "aria-label",
+        "Borrar"
+      );
+    } else {
+      button.setAttribute(
+        "aria-label",
+        `Número ${key}`
+      );
+    }
+
+    button.addEventListener("click", () => {
+      inputKey(key);
+    });
+
+    keypad.append(button);
+  });
+
+  const checkButton =
+    document.createElement("button");
+
+  checkButton.type = "button";
+  checkButton.className =
+    "btn primary check";
+
+  checkButton.textContent = "Comprobar";
+
+  checkButton.addEventListener(
+    "click",
+    checkAnswer
+  );
+
+  keypad.append(checkButton);
+}
+
+function initializeApp() {
+  createKeypad();
+
+  const coverFunction =
+    window[CONFIG.coverRenderer];
+
+  $("#cover").append(coverFunction());
+
+  document
+    .querySelectorAll("[data-level]")
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        startGame(button.dataset.level);
+      });
+    });
+
+  $("#next").addEventListener(
+    "click",
+    goToNextExercise
+  );
+
+  $("#quit").addEventListener(
+    "click",
+    () => showScreen("home")
+  );
+
+  $("#replay").addEventListener(
+    "click",
+    () => startGame(state.level)
+  );
+
+  $("#other").addEventListener(
+    "click",
+    () => showScreen("home")
+  );
+
+  $("#homeBtn").addEventListener(
+    "click",
+    () => showScreen("home")
+  );
+}
+
+initializeApp();
+</script>
+</body>
+</html>
