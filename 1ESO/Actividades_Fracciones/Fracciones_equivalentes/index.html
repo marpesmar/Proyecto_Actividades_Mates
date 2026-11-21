@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fracciones equivalentes</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eaf4ff;
+    color: #20334d;
+}
+
+.contenedor {
+    min-height: 100vh;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    color: #1769aa;
+    font-size: clamp(21px, 3.5vw, 31px);
+    text-align: center;
+    margin: 0 0 5px;
+}
+
+.subtitulo {
+    text-align: center;
+    font-size: 14px;
+    margin: 0 0 15px;
+}
+
+.progreso {
+    width: 100%;
+    max-width: 780px;
+    height: 9px;
+    background: #d3e4f5;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.barra {
+    height: 100%;
+    width: 0%;
+    background: #2696c8;
+    transition: width .3s;
+}
+
+.reto {
+    width: 100%;
+    max-width: 780px;
+    background: white;
+    border: 2px solid #d7e7f7;
+    border-radius: 17px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px #00000010;
+}
+
+.etiqueta {
+    display: inline-block;
+    background: #e0f1ff;
+    color: #1769aa;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 13px;
+}
+
+.pregunta {
+    font-size: clamp(16px, 2.5vw, 21px);
+    font-weight: bold;
+    margin: 5px 0 18px;
+}
+
+.fraccion {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    font-size: 29px;
+    font-weight: bold;
+    color: #1769aa;
+    min-width: 38px;
+    margin: 0 5px;
+}
+
+.linea {
+    width: 100%;
+    height: 3px;
+    background: #1769aa;
+    margin: 3px 0;
+}
+
+.opciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 11px;
+    max-width: 570px;
+    margin: 0 auto;
+}
+
+.opcion {
+    background: #f0f7ff;
+    border: 2px solid #d2e4f5;
+    border-radius: 12px;
+    padding: 14px 7px;
+    color: #1769aa;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.opcion:hover {
+    background: #dceeff;
+    transform: translateY(-2px);
+}
+
+.opcion.seleccionada {
+    border: 3px solid #1769aa;
+    background: #dceeff;
+}
+
+.opcion:disabled {
+    cursor: default;
+}
+
+.fraccion-opcion {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fraccion-opcion .linea {
+    width: 35px;
+    margin: 2px 0;
+}
+
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.accion {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #1769aa;
+    color: white;
+}
+
+.secundario {
+    background: #344b68;
+}
+
+.accion:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.feedback {
+    min-height: 32px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.bien { color: #16834e; }
+.mal { color: #d34444; }
+
+.contador {
+    margin-top: 13px;
+    color: #627890;
+    font-size: 13px;
+}
+
+.final {
+    text-align: center;
+    padding: 10px;
+}
+
+.final h2 { color: #1769aa; }
+
+.nota {
+    font-size: 36px;
+    font-weight: bold;
+    color: #16834e;
+}
+
+@media(max-width: 480px) {
+    .opciones { gap: 6px; }
+    .opcion { padding: 11px 3px; font-size: 17px; }
+    .reto { padding: 14px 9px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>🧩 FRACCIONES EQUIVALENTES</h1>
+<p class="subtitulo">
+¡Supera los tres retos y demuestra lo que sabes!
+</p>
+
+<div class="progreso">
+<div class="barra" id="barra"></div>
+</div>
+
+<div class="reto" id="zona"></div>
+<div class="contador" id="contador"></div>
+
+</div>
+
+<script>
+
+const retos = [
+
+{
+titulo:"RETO 1 · IDENTIFICA",
+pregunta:"¿Cuál de estas fracciones es equivalente a",
+base:[3,4],
+opciones:[[6,8],[6,7],[9,16]],
+correcta:0,
+explicacion:"¡Correcto! Hemos multiplicado el numerador y el denominador por 2."
+},
+
+{
+titulo:"RETO 1 · IDENTIFICA",
+pregunta:"¿Cuál de estas fracciones es equivalente a",
+base:[2,5],
+opciones:[[4,15],[6,15],[4,10]],
+correcta:2,
+explicacion:"¡Muy bien! Hemos multiplicado ambos términos por 2."
+},
+
+{
+titulo:"RETO 2 · AMPLIFICA",
+pregunta:"Multiplica el numerador y el denominador por 2. ¿Qué fracción obtienes?",
+base:[3,7],
+opciones:[[6,14],[9,14],[6,21]],
+correcta:0,
+explicacion:"¡Exacto! 3 × 2 = 6 y 7 × 2 = 14."
+},
+
+{
+titulo:"RETO 2 · AMPLIFICA",
+pregunta:"Multiplica el numerador y el denominador por 3. ¿Qué fracción obtienes?",
+base:[4,9],
+opciones:[[8,18],[12,27],[12,18]],
+correcta:1,
+explicacion:"¡Correcto! 4 × 3 = 12 y 9 × 3 = 27."
+},
+
+{
+titulo:"RETO 3 · SIMPLIFICA",
+pregunta:"Divide el numerador y el denominador entre 2. ¿Qué fracción obtienes?",
+base:[8,12],
+opciones:[[4,6],[4,12],[8,6]],
+correcta:0,
+explicacion:"¡Muy bien! 8 ÷ 2 = 4 y 12 ÷ 2 = 6."
+},
+
+{
+titulo:"RETO 3 · SIMPLIFICA",
+pregunta:"Divide el numerador y el denominador entre 5. ¿Qué fracción obtienes?",
+base:[15,20],
+opciones:[[5,10],[3,4],[3,5]],
+correcta:1,
+explicacion:"¡Exacto! 15 ÷ 5 = 3 y 20 ÷ 5 = 4."
+},
+
+{
+titulo:"RETO 3 · SIMPLIFICA",
+pregunta:"Simplifica la siguiente fracción dividiendo ambos términos entre 3:",
+base:[12,18],
+opciones:[[4,6],[4,9],[9,12]],
+correcta:0,
+explicacion:"¡Correcto! 12 ÷ 3 = 4 y 18 ÷ 3 = 6."
+},
+
+{
+titulo:"RETO 3 · SIMPLIFICA",
+pregunta:"¿Cuál es la fracción irreducible equivalente a",
+base:[10,15],
+opciones:[[5,10],[2,3],[3,5]],
+correcta:1,
+explicacion:"¡Excelente! Dividimos numerador y denominador entre 5. La fracción 2/3 ya no se puede simplificar."
+}
+
+];
+
+let actual=0;
+let puntuacion=0;
+let seleccion=null;
+let respondido=false;
+
+function fraccion(n,d) {
+return `
+<span class="fraccion">
+<span>${n}</span>
+<span class="linea"></span>
+<span>${d}</span>
+</span>`;
+}
+
+function dibujar() {
+
+const zona=document.getElementById("zona");
+const r=retos[actual];
+
+seleccion=null;
+respondido=false;
+
+let opcionesHTML="";
+
+r.opciones.forEach((op,i)=>{
+
+opcionesHTML+=`
+<button class="opcion" onclick="elegir(${i})">
+<span class="fraccion-opcion">
+<span>${op[0]}</span>
+<span class="linea"></span>
+<span>${op[1]}</span>
+</span>
+</button>`;
+
+});
+
+let pregunta=r.pregunta;
+
+if(r.titulo==="RETO 1 · IDENTIFICA" ||
+   r.titulo==="RETO 3 · SIMPLIFICA" && actual===7) {
+pregunta+= " "+fraccion(...r.base)+"?";
+} else {
+pregunta+=" "+fraccion(...r.base);
+}
+
+zona.innerHTML=`
+<div class="etiqueta">${r.titulo}</div>
+<div class="pregunta">${pregunta}</div>
+<div class="opciones">${opcionesHTML}</div>
+<div class="feedback" id="feedback"></div>
+
+<div class="botones">
+<button class="accion" id="comprobar"
+onclick="corregir()" disabled>
+COMPROBAR</button>
+
+<button class="accion secundario" id="siguiente"
+onclick="avanzar()" style="display:none">
+SIGUIENTE →
+</button>
+</div>
+`;
+
+document.getElementById("contador").textContent=
+"Pregunta "+(actual+1)+" de "+retos.length;
+
+document.getElementById("barra").style.width=
+(actual/retos.length*100)+"%";
+}
+
+function elegir(i) {
+
+if(respondido) return;
+
+seleccion=i;
+
+document.querySelectorAll(".opcion").forEach((b,j)=>{
+b.classList.toggle("seleccionada",j===i);
+});
+
+document.getElementById("comprobar").disabled=false;
+}
+
+function corregir() {
+
+if(seleccion===null || respondido) return;
+
+respondido=true;
+
+const r=retos[actual];
+const correcto=seleccion===r.correcta;
+
+if(correcto) puntuacion++;
+
+const feedback=document.getElementById("feedback");
+
+feedback.textContent=correcto
+?"✓ ¡CORRECTO! "+r.explicacion
+:"✗ No es correcto. La respuesta correcta es la opción "+
+(r.correcta+1)+". "+r.explicacion;
+
+feedback.className="feedback "+(correcto?"bien":"mal");
+
+document.querySelectorAll(".opcion").forEach((b,i)=>{
+b.disabled=true;
+
+if(i===r.correcta) {
+b.style.border="3px solid #16834e";
+} else if(i===seleccion) {
+b.style.border="3px solid #d34444";
+}
+});
+
+document.getElementById("comprobar").style.display="none";
+document.getElementById("siguiente").style.display="inline-block";
+}
+
+function avanzar() {
+
+actual++;
+
+if(actual<retos.length) {
+dibujar();
+} else {
+terminar();
+}
+}
+
+function terminar() {
+
+document.getElementById("barra").style.width="100%";
+document.getElementById("contador").textContent="";
+
+let mensaje="";
+
+if(puntuacion===8) {
+mensaje="🏆 ¡PERFECTO! Dominas las fracciones equivalentes.";
+} else if(puntuacion>=6) {
+mensaje="⭐ ¡MUY BIEN! Has superado el reto.";
+} else if(puntuacion>=4) {
+mensaje="👏 ¡Buen trabajo! Sigue practicando.";
+} else {
+mensaje="💪 ¡Buen intento! Repasa y vuelve a jugar.";
+}
+
+document.getElementById("zona").innerHTML=`
+<div class="final">
+<h2>🎉 ¡HAS TERMINADO!</h2>
+<p>Tu puntuación es:</p>
+<div class="nota">${puntuacion} / 8</div>
+<p>${mensaje}</p>
+<button class="accion" onclick="reiniciar()">
+VOLVER A JUGAR
+</button>
+</div>
+`;
+}
+
+function reiniciar() {
+actual=0;
+puntuacion=0;
+seleccion=null;
+respondido=false;
+dibujar();
+}
+
+dibujar();
+
+</script>
+
+</body>
+</html>
