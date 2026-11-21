@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Propias o impropias?</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eaf4ff;
+    color: #20334d;
+}
+
+.contenedor {
+    width: 100%;
+    min-height: 100vh;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    color: #1769aa;
+    font-size: clamp(23px, 4vw, 34px);
+    margin: 0 0 8px;
+    text-align: center;
+}
+
+.instruccion {
+    text-align: center;
+    font-size: clamp(13px, 2vw, 17px);
+    margin: 0 0 20px;
+}
+
+.grid {
+    width: 100%;
+    max-width: 850px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.tarjeta {
+    background: white;
+    border-radius: 15px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: 0 3px 9px #00000012;
+    border: 2px solid #d7e7f7;
+}
+
+.numero {
+    font-size: 13px;
+    font-weight: bold;
+    color: #6c829b;
+    margin-bottom: 9px;
+}
+
+.fraccion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #1769aa;
+}
+
+.linea {
+    width: 38px;
+    height: 3px;
+    background: #1769aa;
+    margin: 3px 0;
+}
+
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+}
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.propia {
+    background: #d9f4e5;
+    color: #167b49;
+}
+
+.impropia {
+    background: #ffe8c9;
+    color: #a65b00;
+}
+
+button:hover {
+    transform: scale(1.04);
+    filter: brightness(0.96);
+}
+
+button.seleccionado {
+    outline: 3px solid #1769aa;
+}
+
+button:disabled {
+    cursor: default;
+}
+
+.resultado {
+    min-height: 25px;
+    margin-top: 9px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.correcto {
+    color: #16834e;
+}
+
+.incorrecto {
+    color: #d34444;
+}
+
+.controles {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.comprobar {
+    background: #1769aa;
+    color: white;
+    padding: 13px 25px;
+    font-size: 15px;
+}
+
+.repetir {
+    background: #344b68;
+    color: white;
+    padding: 13px 25px;
+    font-size: 15px;
+    display: none;
+}
+
+.puntuacion {
+    text-align: center;
+    font-size: 19px;
+    font-weight: bold;
+    color: #1769aa;
+    margin-top: 14px;
+}
+
+.mensaje {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 7px;
+}
+
+@media (max-width: 550px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 9px;
+    }
+
+    .contenedor {
+        padding: 12px;
+    }
+
+    .tarjeta {
+        padding: 10px 5px;
+    }
+
+    button {
+        padding: 9px 7px;
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>🎯 ¿PROPIAS O IMPROPIAS?</h1>
+
+    <p class="instruccion">
+        Observa cada fracción y selecciona el tipo al que pertenece.
+    </p>
+
+    <div class="grid" id="actividad"></div>
+
+    <div class="controles">
+        <button class="comprobar" id="comprobar"
+        onclick="corregir()">COMPROBAR RESPUESTAS</button>
+
+        <button class="repetir" id="repetir"
+        onclick="reiniciar()">VOLVER A JUGAR</button>
+    </div>
+
+    <div class="puntuacion" id="puntuacion"></div>
+    <div class="mensaje" id="mensaje"></div>
+
+</div>
+
+<script>
+
+const preguntas = [
+    {n: 2, d: 7, tipo: "propia"},
+    {n: 9, d: 5, tipo: "impropia"},
+    {n: 4, d: 4, tipo: "impropia"},
+    {n: 3, d: 8, tipo: "propia"},
+    {n: 11, d: 6, tipo: "impropia"},
+    {n: 5, d: 9, tipo: "propia"}
+];
+
+let respuestas = {};
+let corregido = false;
+
+function crearActividad() {
+
+    const actividad = document.getElementById("actividad");
+    actividad.innerHTML = "";
+
+    preguntas.forEach((p, i) => {
+
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta";
+
+        tarjeta.innerHTML = `
+            <div class="numero">FRACCIÓN ${i + 1}</div>
+
+            <div class="fraccion">
+                <span>${p.n}</span>
+                <div class="linea"></div>
+                <span>${p.d}</span>
+            </div>
+
+            <div class="botones">
+                <button class="propia"
+                onclick="seleccionar(${i}, 'propia')">
+                PROPIA</button>
+
+                <button class="impropia"
+                onclick="seleccionar(${i}, 'impropia')">
+                IMPROPIA</button>
+            </div>
+
+            <div class="resultado" id="resultado${i}"></div>
+        `;
+
+        actividad.appendChild(tarjeta);
+    });
+
+    actualizarBotones();
+}
+
+function seleccionar(i, tipo) {
+
+    if (corregido) return;
+
+    respuestas[i] = tipo;
+    actualizarBotones();
+}
+
+function actualizarBotones() {
+
+    preguntas.forEach((p, i) => {
+
+        const tarjeta = document.getElementById("actividad")
+            .children[i];
+
+        const botones = tarjeta.querySelectorAll("button");
+
+        botones[0].classList.toggle(
+            "seleccionado", respuestas[i] === "propia"
+        );
+
+        botones[1].classList.toggle(
+            "seleccionado", respuestas[i] === "impropia"
+        );
+    });
+}
+
+function corregir() {
+
+    if (Object.keys(respuestas).length !== preguntas.length) {
+        document.getElementById("mensaje").textContent =
+            "¡Completa las seis preguntas antes de corregir!";
+        return;
+    }
+
+    let aciertos = 0;
+
+    preguntas.forEach((p, i) => {
+
+        const resultado = document.getElementById("resultado" + i);
+
+        if (respuestas[i] === p.tipo) {
+
+            aciertos++;
+
+            resultado.textContent = "✓ ¡CORRECTO!";
+            resultado.className = "resultado correcto";
+
+        } else {
+
+            resultado.textContent =
+                "✗ Era " + p.tipo.toUpperCase();
+
+            resultado.className = "resultado incorrecto";
+        }
+    });
+
+    corregido = true;
+
+    document.getElementById("puntuacion").textContent =
+        "RESULTADO: " + aciertos + " / 6";
+
+    let mensaje = "";
+
+    if (aciertos === 6) {
+        mensaje = "🏆 ¡Excelente! ¡Dominas las fracciones!";
+    } else if (aciertos >= 4) {
+        mensaje = "⭐ ¡Muy bien! Sigue practicando.";
+    } else {
+        mensaje = "💪 ¡Buen intento! Repasa las reglas y vuelve a jugar.";
+    }
+
+    document.getElementById("mensaje").textContent = mensaje;
+
+    document.getElementById("comprobar").style.display = "none";
+    document.getElementById("repetir").style.display = "inline-block";
+}
+
+function reiniciar() {
+
+    respuestas = {};
+    corregido = false;
+
+    document.getElementById("puntuacion").textContent = "";
+    document.getElementById("mensaje").textContent = "";
+
+    document.getElementById("comprobar").style.display = "inline-block";
+    document.getElementById("repetir").style.display = "none";
+
+    crearActividad();
+}
+
+crearActividad();
+
+</script>
+
+</body>
+</html>
