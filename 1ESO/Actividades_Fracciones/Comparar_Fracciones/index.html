@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duelo de fracciones</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #eaf5ff;
+    color: #17365d;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+    background: white;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 5px 18px rgba(30,70,120,0.12);
+    text-align: center;
+}
+
+h1 {
+    color: #1769aa;
+    margin: 5px 0;
+    font-size: 30px;
+}
+
+.subtitle {
+    color: #55718e;
+    margin-bottom: 22px;
+}
+
+.top-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.info {
+    background: #eaf4ff;
+    padding: 10px 16px;
+    border-radius: 12px;
+}
+
+.progress-bg {
+    height: 12px;
+    background: #e2eaf2;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #2196d2;
+    transition: width .3s;
+}
+
+.card {
+    background: #f6faff;
+    border: 2px solid #dcecff;
+    border-radius: 18px;
+    padding: 25px 15px;
+}
+
+.question-number {
+    color: #2785bd;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.question {
+    font-size: 21px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.fractions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+    min-width: 55px;
+}
+
+.numerator {
+    border-bottom: 3px solid #17365d;
+    padding: 0 12px 5px;
+}
+
+.denominator {
+    padding: 5px 12px 0;
+}
+
+.sign {
+    font-size: 36px;
+    color: #1769aa;
+    font-weight: bold;
+}
+
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 13px;
+    padding: 13px 25px;
+    transition: .2s;
+}
+
+.option {
+    background: #dceeff;
+    color: #14558b;
+    min-width: 90px;
+    border: 2px solid #b8d9f7;
+}
+
+.option:hover:not(:disabled) {
+    background: #b9ddff;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    cursor: default;
+    opacity: .8;
+}
+
+.feedback {
+    min-height: 55px;
+    margin-top: 20px;
+    font-size: 17px;
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+.correct {
+    color: #16834a;
+}
+
+.incorrect {
+    color: #d13c3c;
+}
+
+.next {
+    background: #1769aa;
+    color: white;
+    margin-top: 10px;
+    font-size: 17px;
+    display: none;
+}
+
+.next:hover {
+    background: #0d4f87;
+}
+
+.restart {
+    background: #20a477;
+    color: white;
+    margin-top: 20px;
+    font-size: 17px;
+    display: none;
+}
+
+.result {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #1769aa;
+}
+
+.ordering {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1.8;
+    margin: 20px 0;
+}
+
+.ordering button {
+    font-size: 17px;
+    padding: 12px 16px;
+    margin: 5px;
+    background: #dceeff;
+    color: #14558b;
+    border: 2px solid #b8d9f7;
+}
+
+.ordering button.selected {
+    background: #1769aa;
+    color: white;
+}
+
+@media(max-width: 500px) {
+    .container {
+        padding: 18px 12px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .question {
+        font-size: 18px;
+    }
+
+    .fraction {
+        font-size: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⚔️ ¡Duelo de fracciones!</h1>
+    <p class="subtitle">Demuestra que sabes comparar fracciones</p>
+
+    <div class="top-info">
+        <div class="info" id="counter">Reto 1 de 8</div>
+        <div class="info" id="score">Aciertos: 0</div>
+    </div>
+
+    <div class="progress-bg">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="card" id="game">
+
+        <div class="question-number" id="number">RETO 1</div>
+
+        <div class="question" id="question">
+            ¿Qué fracción es mayor?
+        </div>
+
+        <div class="fractions" id="fractions"></div>
+
+        <div class="options" id="options">
+            <button class="option" onclick="checkAnswer('<')">&lt;</button>
+            <button class="option" onclick="checkAnswer('=')">=</button>
+            <button class="option" onclick="checkAnswer('>')">&gt;</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next" id="next" onclick="nextQuestion()">
+            Siguiente reto →
+        </button>
+
+    </div>
+
+    <div id="final" style="display:none;">
+        <div class="result">🏆 ¡Has terminado!</div>
+        <p id="finalScore"></p>
+        <p id="finalMessage"></p>
+        <button class="restart" id="restart" onclick="restartGame()">
+            Volver a jugar ↻
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+const questions = [
+    {
+        type: "compare",
+        text: "Compara estas fracciones. ¿Cuál es mayor?",
+        a: [2, 7],
+        b: [5, 7],
+        answer: "<",
+        explanation: "Tienen el mismo denominador. Como 2 es menor que 5, la primera fracción es menor."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [3, 4],
+        b: [3, 5],
+        answer: ">",
+        explanation: "Tienen el mismo numerador. La fracción con menor denominador es mayor."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [4, 9],
+        b: [7, 9],
+        answer: "<",
+        explanation: "Tienen el mismo denominador. Como 4 es menor que 7, la primera fracción es menor."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [2, 3],
+        b: [3, 4],
+        answer: "<",
+        explanation: "Buscamos denominador común: 2/3 = 8/12 y 3/4 = 9/12. Por tanto, 2/3 es menor."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [5, 6],
+        b: [4, 5],
+        answer: ">",
+        explanation: "Con denominador común: 5/6 = 25/30 y 4/5 = 24/30. Por tanto, 5/6 es mayor."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [2, 5],
+        b: [4, 10],
+        answer: "=",
+        explanation: "Son fracciones equivalentes: 2/5 = 4/10."
+    },
+    {
+        type: "compare",
+        text: "Compara estas fracciones.",
+        a: [3, 8],
+        b: [1, 2],
+        answer: "<",
+        explanation: "1/2 equivale a 4/8. Como 3/8 es menor que 4/8, la primera fracción es menor."
+    },
+    {
+        type: "order",
+        text: "Ordena estas fracciones de menor a mayor.",
+        fractions: [[1, 2], [3, 4], [1, 4]],
+        answer: ["1/4", "1/2", "3/4"],
+        explanation: "El orden correcto es 1/4, 1/2 y 3/4."
+    }
+];
+
+let current = 0;
+let points = 0;
+let answered = false;
+let selectedOrder = [];
+
+function fractionHTML(f) {
+    return `
+        <div class="fraction">
+            <div class="numerator">${f[0]}</div>
+            <div class="denominator">${f[1]}</div>
+        </div>
+    `;
+}
+
+function showQuestion() {
+    answered = false;
+    selectedOrder = [];
+
+    const q = questions[current];
+
+    document.getElementById("counter").textContent =
+        `Reto ${current + 1} de ${questions.length}`;
+
+    document.getElementById("score").textContent =
+        `Aciertos: ${points}`;
+
+    document.getElementById("number").textContent =
+        `RETO ${current + 1}`;
+
+    document.getElementById("question").textContent = q.text;
+
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("feedback").className = "feedback";
+
+    document.getElementById("next").style.display = "none";
+
+    document.getElementById("progress").style.width =
+        (current / questions.length * 100) + "%";
+
+    const fractions = document.getElementById("fractions");
+    const options = document.getElementById("options");
+
+    if (q.type === "compare") {
+
+        fractions.innerHTML = `
+            ${fractionHTML(q.a)}
+            <div class="sign">?</div>
+            ${fractionHTML(q.b)}
+        `;
+
+        options.innerHTML = `
+            <button class="option" onclick="checkAnswer('<')">&lt;</button>
+            <button class="option" onclick="checkAnswer('=')">=</button>
+            <button class="option" onclick="checkAnswer('>')">&gt;</button>
+        `;
+
+    } else {
+
+        fractions.innerHTML = q.fractions.map(fractionHTML).join("");
+
+        selectedOrder = [];
+
+        options.innerHTML = `
+            <div style="width:100%;font-weight:bold;margin-bottom:10px;">
+                Pulsa las fracciones en el orden correcto:
+            </div>
+            <div class="ordering" id="orderOptions">
+                ${q.fractions.map(f => `
+                    <button onclick="selectFraction('${f[0]}/${f[1]}', this)">
+                        ${f[0]}/${f[1]}
+                    </button>
+                `).join("")}
+            </div>
+            <button class="option" style="font-size:16px;" onclick="checkOrder()">
+                Comprobar orden
+            </button>
+        `;
+    }
+}
+
+function checkAnswer(value) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[current];
+    const correct = value === q.answer;
+
+    if (correct) {
+        points++;
+    }
+
+    showFeedback(correct, q.explanation);
+
+    document.querySelectorAll(".option").forEach(btn => {
+        btn.disabled = true;
+    });
+}
+
+function selectFraction(value, button) {
+
+    if (answered || button.classList.contains("selected")) return;
+
+    selectedOrder.push(value);
+    button.classList.add("selected");
+
+    button.disabled = true;
+
+    document.getElementById("feedback").textContent =
+        "Fracciones seleccionadas: " + selectedOrder.join(" → ");
+}
+
+function checkOrder() {
+
+    if (answered) return;
+
+    if (selectedOrder.length !== 3) {
+        document.getElementById("feedback").textContent =
+            "Selecciona las tres fracciones antes de comprobar.";
+        return;
+    }
+
+    answered = true;
+
+    const q = questions[current];
+
+    const correct = selectedOrder.every((value, index) =>
+        value === q.answer[index]
+    );
+
+    if (correct) {
+        points++;
+    }
+
+    showFeedback(correct, q.explanation);
+}
+
+function showFeedback(correct, explanation) {
+
+    const feedback = document.getElementById("feedback");
+
+    if (correct) {
+        feedback.innerHTML = "✓ ¡Muy bien! Respuesta correcta.<br>" + explanation;
+        feedback.className = "feedback correct";
+    } else {
+        feedback.innerHTML = "✗ ¡Ánimo! La respuesta correcta es: " +
+            (questions[current].type === "compare"
+            ? questions[current].answer
+            : questions[current].answer.join(" → ")) +
+            ".<br>" + explanation;
+
+        feedback.className = "feedback incorrect";
+    }
+
+    document.getElementById("score").textContent =
+        `Aciertos: ${points}`;
+
+    document.getElementById("next").style.display = "inline-block";
+
+    if (current === questions.length - 1) {
+        document.getElementById("next").textContent = "Ver resultado";
+    }
+}
+
+function nextQuestion() {
+
+    current++;
+
+    if (current < questions.length) {
+        showQuestion();
+    } else {
+        finishGame();
+    }
+}
+
+function finishGame() {
+
+    document.getElementById("progress").style.width = "100%";
+    document.getElementById("game").style.display = "none";
+    document.getElementById("final").style.display = "block";
+
+    document.getElementById("finalScore").textContent =
+        `Has conseguido ${points} de ${questions.length} aciertos.`;
+
+    let message = "";
+
+    if (points === 8) {
+        message = "¡Excelente! Dominas la comparación de fracciones. 🌟";
+    } else if (points >= 6) {
+        message = "¡Muy buen trabajo! Sigue practicando.";
+    } else if (points >= 4) {
+        message = "¡Vas por buen camino! Repasa las reglas y vuelve a intentarlo.";
+    } else {
+        message = "¡No te rindas! Practica un poco más y lo conseguirás.";
+    }
+
+    document.getElementById("finalMessage").textContent = message;
+    document.getElementById("restart").style.display = "inline-block";
+}
+
+function restartGame() {
+
+    current = 0;
+    points = 0;
+    answered = false;
+
+    document.getElementById("final").style.display = "none";
+    document.getElementById("game").style.display = "block";
+
+    document.getElementById("next").textContent = "Siguiente reto →";
+
+    showQuestion();
+}
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
